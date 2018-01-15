@@ -1,4 +1,4 @@
-#SUMA
+# SUMA
 
 Suma stands for **S**hort **U**RL **M**anagment **A**pp.
 The role of Suma to manage external links and extract data from them, Suma is a small web service to easily do the following:
@@ -13,7 +13,7 @@ If your application needs to display external links then it's probably important
 
 Suma is at an early stage of development, but the goal of this project is to provide a microservice which covers the basic need for a company to protect their users from external links within their products. You can read more about the motivation behind Suma [here](http://rachbelaid.com/introducing-suma)
 
-##Use cases
+## Use cases
 
 If you don't understand directly what Suma is for. Let's illustrate it with few use cases:
 
@@ -35,9 +35,9 @@ For now, it is the responsibility of your application to handle detection and su
 
 The code of the private API is located in `suma/api` and the code of the public API is located `suma/web`.
 
-##Installation
+## Installation
 
-###Requirements
+### Requirements
 
 - Python 2.7
 - Postgres 9.3+
@@ -72,7 +72,7 @@ If you plan to use s3 then you install the Suma with the s3 dependencies.
     pip install suma[s3]
 
 
-###Configuration files
+### Configuration files
 
 To run Suma, you will need to create 2 ini files which follow the [Paste.Deploy](http://docs.pylonsproject.org/projects/pyramid/en/latest/narr/paste.html) format.
 We provide 2 examples of files to run suma:
@@ -114,7 +114,7 @@ After installing and configuring Suma, you can create the required tables and sc
     initialize_suma_db application.ini
 
 
-###Running Suma
+### Running Suma
 
 We provide 2 examples of config files with already a section to run `uWSGI` with some basic settings. First, you need to install [uWSGI](https://pypi.python.org/pypi/uWSGI). 
 
@@ -139,7 +139,7 @@ We provide 2 examples of config files with already a section to run `uWSGI` with
     
 We suggest that you use uWSGI because it has a good support for [PasteDeploy](https://pypi.python.org/pypi/PasteDeploy). You need to configure the uWSGI's settings to run the application as you prefer (eg: socket + nginx)
 
-##Background Tasks
+## Background Tasks
 
 Suma can run 4 types of background tasks:
 
@@ -148,7 +148,7 @@ Suma can run 4 types of background tasks:
 - `screenshot` to generate a screenshot from the URL. This can be used to display thumbnails preview within your application.
 - `title` to extract the title from the URL. This can also be used for preview.
 
-##Banning Rules
+## Banning Rules
 
 When you ban a URL you can have 3 modes:
 
@@ -168,19 +168,19 @@ if we ban `https://google.com/test` with mode `path` then  `https://google.com/t
 
 if we ban `https://google.com/test` with mode `path` then all the URL's above will be blocked.
 
-##API's
+## APIs
 
-###Private
+### Private
 
 The private API allows you to create, ban links and refresh link's data.
 
-####Create link
+#### Create link
 
 Create a link in Suma for a specific URL. You can also use a `user_id` to generate different links for the same url. 
 
     POST /links
 
-#####Parameters
+##### Parameters
 
 
 | Name      | Type      | Required | Description                                                 |
@@ -189,7 +189,7 @@ Create a link in Suma for a specific URL. You can also use a `user_id` to genera
 | user_id   | integer   | false    | To have different links created for same URL between users  |
 
 
-#####Payload
+##### Payload
 
     {
       "url": "https://google.com",
@@ -202,7 +202,7 @@ or using `user_id`:
       "user_id": 42,
     }
     
-#####Response
+##### Response
 
 Status: 201 Created
 
@@ -249,14 +249,14 @@ Content-Type: application/json
 
 This API return a `201` status if a new link has been created, otherwise it returns a `200` status if a link already exists for the received `url` and `user_id`. When you create a new Link, the `title` and the `screenshot` attributes will be `null` because they are generated asynchronously via the background workers. 
 
-###Get link
+### Get link
 
 Return the existing link for these `id` or `hashid`.
 
     GET /links/:id
     GET /links/:hashid
     
-####Response
+#### Response
 
 Status: 200
 
@@ -303,12 +303,12 @@ Content-Type: application/json
 
 This endpoint returns 404 if there is no link matching the `id` or `hashid`.
 
-###Ban Existing Link
+### Ban Existing Link
 
     POST /links/:id/ban
     POST /links/:hashid/ban
 
-####Parameters
+#### Parameters
 
 
 | Name      | Type      | Required | Description                                                      |
@@ -316,7 +316,7 @@ This endpoint returns 404 if there is no link matching the `id` or `hashid`.
 | mode      | string    | false    | one of these values: "url", "path" or "netloc". Default to "url"" |
 
 
-#####Payload
+##### Payload
 
     {
     }
@@ -329,13 +329,13 @@ or with `mode`:
 
 
 
-###Ban a URL
+### Ban a URL
 
 You can ban a URL even if no link exists yet in the database. It will automatically ban any future links created which match the criteria. 
 
     POST /ban
 
-####Parameters
+#### Parameters
 
 
 | Name      | Type      | Required | Description                                                 |
@@ -344,20 +344,20 @@ You can ban a URL even if no link exists yet in the database. It will automatica
 | mode      | string    | false    | one of these values: "url", "path", "netloc"                 |
 
 
-####Response
+#### Response
 
 Status: 201
 
 Content-Type: application/json
 
-###Get Link's HTML
+### Get Link's HTML
 
 If you enable the `html` task then Suma stores the HTML of a URL so you can retrieve it later.
 
     GET /links/:id/html
     GET /links/:hashid/html
 
-####Response
+#### Response
 
 Status: 200
 
@@ -365,14 +365,14 @@ Content-Type: text/html
 
 If the value doesn't exist then you will receive a 204 (No Content) 
 
-###Get Link's text
+### Get Link's text
 
 If you enable the `text` task then Suma tries to get the main content of a URL using [Goose](https://pypi.python.org/pypi/goose-extractor/). This can be useful for articles to display the content for preview. 
 
     GET /links/:id/text
     GET /links/:hashid/text
 
-####Response
+#### Response
 
 Status: 200
 
@@ -380,25 +380,25 @@ Content-Type: text/plain
 
 If the value doesn't exist then you will receive a 204 (No Content) 
 
-##Public API
+## Public API
 
-###Access Link (Redirect)
+### Access Link (Redirect)
 
     GET /:hashid 
 
 Accessing the hashid of the public API will return a Permanent Redirect (301) to the URL and increment the clicks counter.
 
-###Access Link Screenshot (Redirect)
+### Access Link Screenshot (Redirect)
 
     GET /:hashid/screenshot 
 
 Accessing this endpoint will return a Temporary Redirect (302) to the screenshot URL
 
-##Questions
+## Questions
 
 If you've met any difficulties or have questions, you can ask them via [gitter](gitter.im/rach/suma)
 
-##Contribute
+## Contribute
 
 The project is young so there are quite a few things that you can do if you want to contribute:
 
@@ -412,6 +412,6 @@ The project is young so there are quite a few things that you can do if you want
  
 Any help is appreciated.
 
-##License
+## License
 
 Suma is licensed under Apache V2 license, the full license text can be found [here](https://github.com/rach/suma/blob/master/LICENSE)
